@@ -13,10 +13,35 @@
         android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="50dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:id="@+id/tv"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1.5"
+                    android:text="HIGH SCORE"/>
+                <TextView
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:id="@+id/high_score"
+                    android:text="00:00:00"/>
+
+            </LinearLayout>
+        </LinearLayout>
     </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:layout_width="match_parent"

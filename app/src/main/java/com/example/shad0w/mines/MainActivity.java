@@ -1,7 +1,10 @@
 package com.example.shad0w.mines;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -13,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
@@ -24,31 +26,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int Csize = 6;
     boolean first = true;
     int size;
+    private Handler customHandler = new Handler();
     int Msize;
     int count = 0;
     int[] index_x = {-1, -1, -1, 0, 1, 1, 1, 0};
     int[] index_y = {-1, 0, 1, 1, 1, 0, -1, -1};
-
+    long startTime;
     LinearLayout rootlayout;
-
+    long timeInMilliseconds = 0L;
+    long timeSwapBuff = 0L;
+    long updatedTime = 0L;
+    TextView high_score;
+    String score="99:99:99";
+    SharedPreferences sharedPreferences;
+    TextView textView;
+   boolean win=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar=findViewById(R.id.toolbar);
+        high_score=findViewById(R.id.high_score);
+        sharedPreferences=getSharedPreferences("my_data2",MODE_PRIVATE);
+        String s=sharedPreferences.getString("my_data2",null);
+        if(s!=null)
+        { high_score.setText(s);
+            score=s;
+        }
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        TextView textView =findViewById(R.id.tv);
+        textView = findViewById(R.id.tv);
         getSupportActionBar().setTitle("");
-        textView.setText("hello");
+        textView.setText("00:00:000");
         Intent intent = getIntent();
         Rsize = intent.getIntExtra("row", 5);
         Csize = intent.getIntExtra("col", 5);
-        int temp=0;
-        if(Csize+Rsize<Csize*Rsize)
-            temp=Csize+Rsize;
-       size= rand.nextInt(Rsize * Csize - (temp))+1;
-        Msize=size;
+        int temp = 0;
+        if (Csize + Rsize < Csize * Rsize)
+            temp = Csize + Rsize;
+        size = (Rsize*Csize)/5;
+        Msize = size;
         Log.i("intent", "" + intent);
         rootlayout = findViewById(R.id.root);
         setupboard();
@@ -71,21 +89,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void reset() {
+        timeSwapBuff += timeInMilliseconds;
+        customHandler.removeCallbacks(updateTimerThread);
         first = true;
-        int temp=0;
-        if(Csize+Rsize<Csize*Rsize)
-            temp=Csize+Rsize;
+        int temp = 0;
+        if (Csize + Rsize < Csize * Rsize)
+            temp = Csize + Rsize;
         size = rand.nextInt(Rsize * Csize - (temp)) + 1;
         Msize = size;
         count = 0;
+        startTime = 0;
+        timeInMilliseconds = 0L;
+        timeSwapBuff = 0L;
+        updatedTime = 0L;
         setupboard();
 
     }
 
+    private Runnable updateTimerThread = new Runnable() {
+        public void run() {
+            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+            updatedTime = timeSwapBuff + timeInMilliseconds;
+            int secs = (int) (updatedTime / 1000);
+            int mins = secs / 60;
+            secs = secs % 60;
+            int milliseconds = (int) (updatedTime % 1000);
+            String ans="" + mins + ":" + String.format("%02d", secs) + ":" + String.format("%03d", milliseconds);
+          //  Log.i("win","nwinn  "+score+" "+ans+"  "+updatedTime);
+
+            textView.setText(ans);
+            customHandler.postDelayed(this, 0);
+        }
+    };
+
 
     private void setupboard() {
-        if(rootlayout!=null)
-        rootlayout.removeAllViews();
+        if (rootlayout != null)
+            rootlayout.removeAllViews();
         board = new Mine_button[Rsize][Csize];
         ans = new int[Rsize][Csize];
         for (int i = 0; i < Rsize; i++) {
@@ -115,14 +155,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-
-
         //Toast.makeText(this, "game over", Toast.LENGTH_LONG).show();
         Mine_button button = (Mine_button) view;
         if (!button.longp)
             return;
         if (first) {
             plantbomb(button.r, button.c);
+            startTime = SystemClock.uptimeMillis();
+            customHandler.postDelayed(updateTimerThread, 0);
             // Log.i("value", "this" + button.r + " " + button.c);
         }
 
@@ -149,9 +189,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 openvalue(p + index_x[k], q + index_y[k]);
         }
         if (count == (Rsize * Csize) - Msize) {
+            win=true;
+          if(highScoreComparer(textView.getText().toString(),score)){
+            SharedPreferences.Editor editor=sharedPreferences.edit();
+            editor.putString("my_data2",textView.getText().toString());
+            high_score.setText(textView.getText().toString());
+            editor.commit();}
             Toast.makeText(this, "you win", Toast.LENGTH_LONG).show();
             openall(board[p][q]);
         }
+
 
     }
 
@@ -165,11 +212,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 board[i][j].setEnabled(false);
             }
         }
+        timeSwapBuff += timeInMilliseconds;
+        customHandler.removeCallbacks(updateTimerThread);
         //Mine_button b2=new Mine_button(this);
         //b2.setEnabled(false);
 
     }
+    private boolean highScoreComparer(String s, String p) {
 
+
+        String y[]=s.split(":");
+        String z[]=p.split(":");
+        int s1=0;
+        for(int i=0;i<y.length;i++){
+            s1*=60;
+            s1+=Integer.parseInt(y[i]);
+        }
+        int s2=0;
+        for(int i=0;i<y.length;i++){
+            s2*=60;
+            s2+=Integer.parseInt(z[i]);
+        }
+        if(s1>s2)
+            return false;
+        else
+            return true;
+    }
     void plantbomb(int i, int j) {
         while (size > 0) {
             int x = rand.nextInt(Rsize);
