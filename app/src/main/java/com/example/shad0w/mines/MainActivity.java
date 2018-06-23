@@ -3,13 +3,16 @@ package com.example.shad0w.mines;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
 
 import java.util.Random;
 
@@ -33,7 +36,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Toolbar toolbar=findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        TextView textView =findViewById(R.id.tv);
+        getSupportActionBar().setTitle("");
+        textView.setText("hello");
         Intent intent = getIntent();
         Rsize = intent.getIntExtra("row", 5);
         Csize = intent.getIntExtra("col", 5);
@@ -77,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void setupboard() {
+        if(rootlayout!=null)
         rootlayout.removeAllViews();
         board = new Mine_button[Rsize][Csize];
         ans = new int[Rsize][Csize];
