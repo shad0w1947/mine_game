@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,13 +19,17 @@ import static android.os.Build.VERSION_CODES.N;
 
 public class start extends AppCompatActivity implements View.OnClickListener{
 int v1,v2;
+LinearLayout root;
+boolean check=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        root=findViewById(R.id.root);
     }
 
     public void value(View view) {
+        Log.i("cuntom","value");
         Button b=(Button)view;
         if(b.getId()==R.id.one){
             v1=5;
@@ -40,30 +45,46 @@ int v1,v2;
         }
         enter();
     }
-
+   EditText t1;
+    EditText t2;
     public void custom(View view) {
-        EditText t1=new EditText(this);
-        EditText t2=new EditText(this);
+        Log.i("cuntom","hee");
+        //root.removeAllViews();
+         t1=new EditText(this);
+         t2=new EditText(this);
         ViewGroup.LayoutParams lp=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,0);
         t1.setLayoutParams(lp);
         t2.setLayoutParams(lp);
+        Button b=new Button(this);
+        b.setLayoutParams(lp);
+        b.setText("ENTER");
+        root.addView(t1);
+        root.addView(t2);
+        root.addView(b);
        // t1.setInputType();
         t1.setHint("enter row");
         t2.setHint("entr column");
+
+        b.setOnClickListener(this);
+        check=false;
+       // enter();
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        //if(check)
+      //  custom();
         if(t1.getText().toString().isEmpty()||t2.getText().toString().isEmpty())
-            Toast.makeText(this,"enter proper values",Toast.LENGTH_LONG).show();
+        {Toast.makeText(this,"enter proper values",Toast.LENGTH_LONG).show();
+            return;
+        }
         else
         {
             v1=Integer.parseInt(t1.getText().toString());
             v2=Integer.parseInt(t2.getText().toString());
         }
-        Button b=new Button(this);
-        b.setLayoutParams(lp);
-        b.setOnClickListener(this);
-    }
 
-    @Override
-    public void onClick(View view) {
         enter();
     }
 

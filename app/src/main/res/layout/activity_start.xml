@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
+    android:id="@+id/root"
     tools:context=".start">
 
     <Button
@@ -30,8 +31,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/three"/>
     <Button
-        android:text="custom ?"
-        android:onClick="custom"
+        android:text="custom"
+android:onClick="custom"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

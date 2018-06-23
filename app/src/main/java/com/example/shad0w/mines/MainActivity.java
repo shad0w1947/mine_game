@@ -20,8 +20,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int Rsize = 8;
     int Csize = 6;
     boolean first = true;
-    int size = rand.nextInt(Rsize * Csize - (Csize + Rsize)) + 1;
-    int Msize = size;
+    int size;
+    int Msize;
     int count = 0;
     int[] index_x = {-1, -1, -1, 0, 1, 1, 1, 0};
     int[] index_y = {-1, 0, 1, 1, 1, 0, -1, -1};
@@ -37,6 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = getIntent();
         Rsize = intent.getIntExtra("row", 5);
         Csize = intent.getIntExtra("col", 5);
+        int temp=0;
+        if(Csize+Rsize<Csize*Rsize)
+            temp=Csize+Rsize;
+       size= rand.nextInt(Rsize * Csize - (temp))+1;
+        Msize=size;
         Log.i("intent", "" + intent);
         rootlayout = findViewById(R.id.root);
         setupboard();
@@ -60,7 +65,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void reset() {
         first = true;
-        size = rand.nextInt(Rsize * Csize - (Csize + Rsize)) + 1;
+        int temp=0;
+        if(Csize+Rsize<Csize*Rsize)
+            temp=Csize+Rsize;
+        size = rand.nextInt(Rsize * Csize - (temp)) + 1;
         Msize = size;
         count = 0;
         setupboard();
